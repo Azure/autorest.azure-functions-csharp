@@ -67,7 +67,8 @@ namespace AutoRest.CSharp.V3.AutoRest.Communication
                 Path.Combine(basePath, root.GetProperty(nameof(Configuration.SharedSourceFolder)).GetString()),
                 saveInputs: false,
                 root.GetProperty(nameof(Configuration.AzureArm)).GetBoolean(),
-                root.GetProperty(nameof(Configuration.PublicClients)).GetBoolean()
+                root.GetProperty(nameof(Configuration.PublicClients)).GetBoolean(),
+                root.GetProperty(nameof(Configuration.GenerateMetadata)).GetBoolean()
             );
         }
     }

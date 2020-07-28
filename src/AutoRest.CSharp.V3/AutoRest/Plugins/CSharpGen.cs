@@ -45,13 +45,19 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
             var headerModelModelWriter = new ResponseHeaderGroupWriter();
 
             // Generate the landing zone for the files.
-            var x = new ProcessStartInfo("func");
-            x.WorkingDirectory = Path.Combine(configuration.OutputFolder, "Generated");
-            x.ArgumentList.Add("init");
-            x.ArgumentList.Add("--worker-runtime");
-            x.ArgumentList.Add("dotnet");
-            x.ArgumentList.Add("--force");
-            Process.Start(x).WaitForExit();
+            if (configuration.GenerateMetadata)
+            {
+                var x = new ProcessStartInfo("func");
+                x.WorkingDirectory = Path.Combine(configuration.OutputFolder, "Generated");
+                x.ArgumentList.Add("init");
+                x.ArgumentList.Add("--worker-runtime");
+                x.ArgumentList.Add("dotnet");
+                x.ArgumentList.Add("--force");
+                Process.Start(x).WaitForExit();
+
+                // Rename csproj
+                File.Move(Path.Combine(x.WorkingDirectory, "Generated.csproj"), Path.Combine(x.WorkingDirectory, $"{configuration.LibraryName}.csproj"));
+            }
 
             foreach (var model in context.Library.Models)
             {
@@ -167,7 +173,8 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
                 new Uri(GetRequiredOption(autoRest, "shared-source-folder")).LocalPath,
                 autoRest.GetValue<bool?>("save-inputs").GetAwaiter().GetResult() ?? false,
                 autoRest.GetValue<bool?>("azure-arm").GetAwaiter().GetResult() ?? false,
-                autoRest.GetValue<bool?>("public-clients").GetAwaiter().GetResult() ?? false
+                autoRest.GetValue<bool?>("public-clients").GetAwaiter().GetResult() ?? false,
+                autoRest.GetValue<bool?>("generate-metadata").GetAwaiter().GetResult() ?? true
             );
 
             if (configuration.SaveInputs)

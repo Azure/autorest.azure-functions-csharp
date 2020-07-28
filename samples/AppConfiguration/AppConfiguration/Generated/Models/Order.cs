@@ -7,7 +7,7 @@
 
 using System;
 
-namespace AppConfiguration.Models
+namespace HackThePetstore.Models
 {
     /// <summary> The Order. </summary>
     public partial class Order

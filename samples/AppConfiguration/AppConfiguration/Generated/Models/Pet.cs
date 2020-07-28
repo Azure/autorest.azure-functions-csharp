@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace AppConfiguration.Models
+namespace HackThePetstore.Models
 {
     /// <summary> The Pet. </summary>
     public partial class Pet

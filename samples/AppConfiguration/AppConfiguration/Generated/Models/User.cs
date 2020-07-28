@@ -5,7 +5,7 @@
 
 #nullable disable
 
-namespace AppConfiguration.Models
+namespace HackThePetstore.Models
 {
     /// <summary> The User. </summary>
     public partial class User

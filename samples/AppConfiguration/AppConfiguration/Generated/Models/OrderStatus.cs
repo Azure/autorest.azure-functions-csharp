@@ -8,7 +8,7 @@
 using System;
 using System.ComponentModel;
 
-namespace AppConfiguration.Models
+namespace HackThePetstore.Models
 {
     /// <summary> Order Status. </summary>
     public readonly partial struct OrderStatus : IEquatable<OrderStatus>

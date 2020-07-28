@@ -8,14 +8,14 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using AppConfiguration.Models;
+using HackThePetstore.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 
-namespace AppConfiguration
+namespace HackThePetstore
 {
     public class PetApi
     {

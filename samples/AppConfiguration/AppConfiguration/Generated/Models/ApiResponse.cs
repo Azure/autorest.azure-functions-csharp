@@ -5,7 +5,7 @@
 
 #nullable disable
 
-namespace AppConfiguration.Models
+namespace HackThePetstore.Models
 {
     /// <summary> The ApiResponse. </summary>
     internal partial class ApiResponse
