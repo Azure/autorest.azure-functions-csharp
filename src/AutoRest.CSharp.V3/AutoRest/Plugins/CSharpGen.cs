@@ -56,7 +56,7 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
                 Process.Start(x).WaitForExit();
 
                 // Rename csproj
-                File.Move(Path.Combine(x.WorkingDirectory, "Generated.csproj"), Path.Combine(x.WorkingDirectory, $"{configuration.LibraryName}.csproj"));
+                File.Move(Path.Combine(x.WorkingDirectory, "Generated.csproj"), Path.Combine(x.WorkingDirectory, $"{configuration.LibraryName}.csproj"), true);
             }
 
             foreach (var model in context.Library.Models)
@@ -74,6 +74,8 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
 
             foreach (var client in context.Library.RestClients)
             {
+                // HACK: since I'm mooching off of rest clients, need to map based on path segments
+                // to reasonable file chunks
                 var apiGroups = client.Methods.GroupBy(m =>
                 {
                     var pathSegment = m.Request.PathSegments.First(s => {
@@ -101,10 +103,10 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
                 foreach (var apiGroup in apiGroups)
                 {
                     var codeWriter = new CodeWriter();
-                    var className = $"{apiGroup.Key.ToCleanName()}Api";
-                    restServerWriter.WriteServer(codeWriter, client.Type.Namespace, className, apiGroup);
+                    var cs = new CSharpType(new SelfTypeProvider(context), client.Type.Namespace, $"{apiGroup.Key.ToCleanName()}Api");
+                    restServerWriter.WriteServer(codeWriter, apiGroup, cs);
 
-                    project.AddGeneratedFile($"{className}.cs", codeWriter.ToString());
+                    project.AddGeneratedFile($"{cs.Name}.cs", codeWriter.ToString());
                 }
 
 

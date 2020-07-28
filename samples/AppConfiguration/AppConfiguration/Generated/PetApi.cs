@@ -19,19 +19,33 @@ namespace HackThePetstore
 {
     public class PetApi
     {
+        private ILogger<PetApi> _logger;
+
+        /// <summary> Initializes a new instance of PetApi. </summary>
+        /// <param name="logger"> Class logger. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="logger"/> is null. </exception>
+        public PetApi(ILogger<PetApi> logger)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            _logger = logger;
+        }
+
         /// <summary> Add a new pet to the store. </summary>
         /// <param name="body"> Pet object that needs to be added to the store. </param>
         /// <param name="req"> Raw HTTP Request. </param>
-        /// <param name="log"> function logger. </param>
         /// <param name="cancellationToken"> The cancellation token provided on Function shutdown. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="body"/> is null. </exception>
         [FunctionName("AddPetAsync_post")]
-        public async Task<IActionResult> AddPetAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "pet")] Pet body, HttpRequest req, ILogger log, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> AddPetAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "pet")] Pet body, HttpRequest req, CancellationToken cancellationToken = default)
         {
-            log.LogInformation("HTTP Trigger function processed a request.");
+            _logger.LogInformation("HTTP trigger function processed a request.");
 
-            // TODO: Handle this Response Codes
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(405)
+            // TODO: Handle Documented Responses.
+            // Spec Defines: HTTP 405
 
             throw new NotImplementedException();
         }
@@ -39,52 +53,49 @@ namespace HackThePetstore
         /// <summary> Update an existing pet. </summary>
         /// <param name="body"> Pet object that needs to be added to the store. </param>
         /// <param name="req"> Raw HTTP Request. </param>
-        /// <param name="log"> function logger. </param>
         /// <param name="cancellationToken"> The cancellation token provided on Function shutdown. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="body"/> is null. </exception>
         [FunctionName("UpdatePetAsync_put")]
-        public async Task<IActionResult> UpdatePetAsync([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "pet")] Pet body, HttpRequest req, ILogger log, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> UpdatePetAsync([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "pet")] Pet body, HttpRequest req, CancellationToken cancellationToken = default)
         {
-            log.LogInformation("HTTP Trigger function processed a request.");
+            _logger.LogInformation("HTTP trigger function processed a request.");
 
-            // TODO: Handle this Response Codes
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(400)
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(404)
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(405)
+            // TODO: Handle Documented Responses.
+            // Spec Defines: HTTP 400
+            // Spec Defines: HTTP 404
+            // Spec Defines: HTTP 405
 
             throw new NotImplementedException();
         }
 
         /// <summary> Multiple status values can be provided with comma separated strings. </summary>
         /// <param name="req"> Raw HTTP Request. </param>
-        /// <param name="log"> function logger. </param>
         /// <param name="cancellationToken"> The cancellation token provided on Function shutdown. </param>
         [FunctionName("FindPetsByStatusAsync_get")]
-        public async Task<IActionResult> FindPetsByStatusAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "pet/findByStatus")] HttpRequest req, ILogger log, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> FindPetsByStatusAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "pet/findByStatus")] HttpRequest req, CancellationToken cancellationToken = default)
         {
-            log.LogInformation("HTTP Trigger function processed a request.");
+            _logger.LogInformation("HTTP trigger function processed a request.");
 
-            // TODO: Handle this Response Codes
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(200)
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(200)
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(400)
+            // TODO: Handle Documented Responses.
+            // Spec Defines: HTTP 200
+            // Spec Defines: HTTP 200
+            // Spec Defines: HTTP 400
 
             throw new NotImplementedException();
         }
 
         /// <summary> Muliple tags can be provided with comma separated strings. Use\ \ tag1, tag2, tag3 for testing. </summary>
         /// <param name="req"> Raw HTTP Request. </param>
-        /// <param name="log"> function logger. </param>
         /// <param name="cancellationToken"> The cancellation token provided on Function shutdown. </param>
         [FunctionName("FindPetsByTagsAsync_get")]
-        public async Task<IActionResult> FindPetsByTagsAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "pet/findByTags")] HttpRequest req, ILogger log, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> FindPetsByTagsAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "pet/findByTags")] HttpRequest req, CancellationToken cancellationToken = default)
         {
-            log.LogInformation("HTTP Trigger function processed a request.");
+            _logger.LogInformation("HTTP trigger function processed a request.");
 
-            // TODO: Handle this Response Codes
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(200)
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(200)
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(400)
+            // TODO: Handle Documented Responses.
+            // Spec Defines: HTTP 200
+            // Spec Defines: HTTP 200
+            // Spec Defines: HTTP 400
 
             throw new NotImplementedException();
         }
@@ -92,17 +103,16 @@ namespace HackThePetstore
         /// <summary> Returns a single pet. </summary>
         /// <param name="req"> Raw HTTP Request. </param>
         /// <param name="petId"> ID of pet to return. </param>
-        /// <param name="log"> function logger. </param>
         /// <param name="cancellationToken"> The cancellation token provided on Function shutdown. </param>
         [FunctionName("GetPetByIdAsync_get")]
-        public async Task<IActionResult> GetPetByIdAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "pet/{petId}")] HttpRequest req, long petId, ILogger log, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetPetByIdAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "pet/{petId}")] HttpRequest req, long petId, CancellationToken cancellationToken = default)
         {
-            log.LogInformation("HTTP Trigger function processed a request.");
+            _logger.LogInformation("HTTP trigger function processed a request.");
 
-            // TODO: Handle this Response Codes
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(200)
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(400)
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(404)
+            // TODO: Handle Documented Responses.
+            // Spec Defines: HTTP 200
+            // Spec Defines: HTTP 400
+            // Spec Defines: HTTP 404
 
             throw new NotImplementedException();
         }
@@ -110,16 +120,15 @@ namespace HackThePetstore
         /// <summary> Deletes a pet. </summary>
         /// <param name="req"> Raw HTTP Request. </param>
         /// <param name="petId"> Pet id to delete. </param>
-        /// <param name="log"> function logger. </param>
         /// <param name="cancellationToken"> The cancellation token provided on Function shutdown. </param>
         [FunctionName("DeletePetAsync_delete")]
-        public async Task<IActionResult> DeletePetAsync([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "pet/{petId}")] HttpRequest req, long petId, ILogger log, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> DeletePetAsync([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "pet/{petId}")] HttpRequest req, long petId, CancellationToken cancellationToken = default)
         {
-            log.LogInformation("HTTP Trigger function processed a request.");
+            _logger.LogInformation("HTTP trigger function processed a request.");
 
-            // TODO: Handle this Response Codes
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(400)
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(404)
+            // TODO: Handle Documented Responses.
+            // Spec Defines: HTTP 400
+            // Spec Defines: HTTP 404
 
             throw new NotImplementedException();
         }

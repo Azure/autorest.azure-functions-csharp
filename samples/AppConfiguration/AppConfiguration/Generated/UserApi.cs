@@ -20,18 +20,30 @@ namespace HackThePetstore
 {
     public class UserApi
     {
+        private ILogger<UserApi> _logger;
+
+        /// <summary> Initializes a new instance of UserApi. </summary>
+        /// <param name="logger"> Class logger. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="logger"/> is null. </exception>
+        public UserApi(ILogger<UserApi> logger)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            _logger = logger;
+        }
+
         /// <summary> This can only be done by the logged in user. </summary>
         /// <param name="body"> Created user object. </param>
         /// <param name="req"> Raw HTTP Request. </param>
-        /// <param name="log"> function logger. </param>
         /// <param name="cancellationToken"> The cancellation token provided on Function shutdown. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="body"/> is null. </exception>
         [FunctionName("CreateUserAsync_post")]
-        public async Task<IActionResult> CreateUserAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user")] User body, HttpRequest req, ILogger log, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> CreateUserAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user")] User body, HttpRequest req, CancellationToken cancellationToken = default)
         {
-            log.LogInformation("HTTP Trigger function processed a request.");
-
-            // TODO: Handle this Response Codes
+            _logger.LogInformation("HTTP trigger function processed a request.");
 
             throw new NotImplementedException();
         }
@@ -39,15 +51,12 @@ namespace HackThePetstore
         /// <summary> Creates list of users with given input array. </summary>
         /// <param name="body"> List of user object. </param>
         /// <param name="req"> Raw HTTP Request. </param>
-        /// <param name="log"> function logger. </param>
         /// <param name="cancellationToken"> The cancellation token provided on Function shutdown. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="body"/> is null. </exception>
         [FunctionName("CreateUsersWithArrayInputAsync_post")]
-        public async Task<IActionResult> CreateUsersWithArrayInputAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user/createWithArray")] List<User> body, HttpRequest req, ILogger log, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> CreateUsersWithArrayInputAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user/createWithArray")] List<User> body, HttpRequest req, CancellationToken cancellationToken = default)
         {
-            log.LogInformation("HTTP Trigger function processed a request.");
-
-            // TODO: Handle this Response Codes
+            _logger.LogInformation("HTTP trigger function processed a request.");
 
             throw new NotImplementedException();
         }
@@ -55,45 +64,38 @@ namespace HackThePetstore
         /// <summary> Creates list of users with given input array. </summary>
         /// <param name="body"> List of user object. </param>
         /// <param name="req"> Raw HTTP Request. </param>
-        /// <param name="log"> function logger. </param>
         /// <param name="cancellationToken"> The cancellation token provided on Function shutdown. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="body"/> is null. </exception>
         [FunctionName("CreateUsersWithListInputAsync_post")]
-        public async Task<IActionResult> CreateUsersWithListInputAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user/createWithList")] List<User> body, HttpRequest req, ILogger log, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> CreateUsersWithListInputAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user/createWithList")] List<User> body, HttpRequest req, CancellationToken cancellationToken = default)
         {
-            log.LogInformation("HTTP Trigger function processed a request.");
-
-            // TODO: Handle this Response Codes
+            _logger.LogInformation("HTTP trigger function processed a request.");
 
             throw new NotImplementedException();
         }
 
         /// <summary> Logs user into the system. </summary>
         /// <param name="req"> Raw HTTP Request. </param>
-        /// <param name="log"> function logger. </param>
         /// <param name="cancellationToken"> The cancellation token provided on Function shutdown. </param>
         [FunctionName("LoginUserAsync_get")]
-        public async Task<IActionResult> LoginUserAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user/login")] HttpRequest req, ILogger log, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> LoginUserAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user/login")] HttpRequest req, CancellationToken cancellationToken = default)
         {
-            log.LogInformation("HTTP Trigger function processed a request.");
+            _logger.LogInformation("HTTP trigger function processed a request.");
 
-            // TODO: Handle this Response Codes
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(200)
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(400)
+            // TODO: Handle Documented Responses.
+            // Spec Defines: HTTP 200
+            // Spec Defines: HTTP 400
 
             throw new NotImplementedException();
         }
 
         /// <summary> Logs out current logged in user session. </summary>
         /// <param name="req"> Raw HTTP Request. </param>
-        /// <param name="log"> function logger. </param>
         /// <param name="cancellationToken"> The cancellation token provided on Function shutdown. </param>
         [FunctionName("LogoutUserAsync_get")]
-        public async Task<IActionResult> LogoutUserAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user/logout")] HttpRequest req, ILogger log, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> LogoutUserAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user/logout")] HttpRequest req, CancellationToken cancellationToken = default)
         {
-            log.LogInformation("HTTP Trigger function processed a request.");
-
-            // TODO: Handle this Response Codes
+            _logger.LogInformation("HTTP trigger function processed a request.");
 
             throw new NotImplementedException();
         }
@@ -101,18 +103,17 @@ namespace HackThePetstore
         /// <summary> Get user by user name. </summary>
         /// <param name="req"> Raw HTTP Request. </param>
         /// <param name="username"> The name that needs to be fetched. Use user1 for testing. </param>
-        /// <param name="log"> function logger. </param>
         /// <param name="cancellationToken"> The cancellation token provided on Function shutdown. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="username"/> is null. </exception>
         [FunctionName("GetUserByNameAsync_get")]
-        public async Task<IActionResult> GetUserByNameAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user/{username}")] HttpRequest req, string username, ILogger log, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetUserByNameAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user/{username}")] HttpRequest req, string username, CancellationToken cancellationToken = default)
         {
-            log.LogInformation("HTTP Trigger function processed a request.");
+            _logger.LogInformation("HTTP trigger function processed a request.");
 
-            // TODO: Handle this Response Codes
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(200)
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(400)
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(404)
+            // TODO: Handle Documented Responses.
+            // Spec Defines: HTTP 200
+            // Spec Defines: HTTP 400
+            // Spec Defines: HTTP 404
 
             throw new NotImplementedException();
         }
@@ -121,17 +122,16 @@ namespace HackThePetstore
         /// <param name="username"> name that need to be updated. </param>
         /// <param name="body"> Updated user object. </param>
         /// <param name="req"> Raw HTTP Request. </param>
-        /// <param name="log"> function logger. </param>
         /// <param name="cancellationToken"> The cancellation token provided on Function shutdown. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="username"/> or <paramref name="body"/> is null. </exception>
         [FunctionName("UpdateUserAsync_put")]
-        public async Task<IActionResult> UpdateUserAsync(string username, [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "user/{username}")] User body, HttpRequest req, ILogger log, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> UpdateUserAsync(string username, [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "user/{username}")] User body, HttpRequest req, CancellationToken cancellationToken = default)
         {
-            log.LogInformation("HTTP Trigger function processed a request.");
+            _logger.LogInformation("HTTP trigger function processed a request.");
 
-            // TODO: Handle this Response Codes
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(400)
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(404)
+            // TODO: Handle Documented Responses.
+            // Spec Defines: HTTP 400
+            // Spec Defines: HTTP 404
 
             throw new NotImplementedException();
         }
@@ -139,17 +139,16 @@ namespace HackThePetstore
         /// <summary> This can only be done by the logged in user. </summary>
         /// <param name="req"> Raw HTTP Request. </param>
         /// <param name="username"> The name that needs to be deleted. </param>
-        /// <param name="log"> function logger. </param>
         /// <param name="cancellationToken"> The cancellation token provided on Function shutdown. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="username"/> is null. </exception>
         [FunctionName("DeleteUserAsync_delete")]
-        public async Task<IActionResult> DeleteUserAsync([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "user/{username}")] HttpRequest req, string username, ILogger log, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> DeleteUserAsync([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "user/{username}")] HttpRequest req, string username, CancellationToken cancellationToken = default)
         {
-            log.LogInformation("HTTP Trigger function processed a request.");
+            _logger.LogInformation("HTTP trigger function processed a request.");
 
-            // TODO: Handle this Response Codes
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(400)
-            // return new global::Microsoft.AspNetCore.Mvc.StatusCodeResult(404)
+            // TODO: Handle Documented Responses.
+            // Spec Defines: HTTP 400
+            // Spec Defines: HTTP 404
 
             throw new NotImplementedException();
         }

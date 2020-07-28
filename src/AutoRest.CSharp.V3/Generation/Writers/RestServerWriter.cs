@@ -30,58 +30,53 @@ namespace AutoRest.CSharp.V3.Generation.Writers
 {
     internal class RestServerWriter
     {
-        public void WriteServer(CodeWriter writer, string @namespace, string className, IEnumerable<RestClientMethod> methods)
+        public void WriteServer(CodeWriter writer, IEnumerable<RestClientMethod> methods, CSharpType cs)
         {
-            using (writer.Namespace(@namespace))
+            using (writer.Namespace(cs.Namespace))
             {
-                //writer.WriteXmlDocumentationSummary(restClient.Description);
-                using (writer.Scope($"public class {className}"))
+                using (writer.Scope($"public class {cs.Name}"))
                 {
-                    //WriteClientFields(writer, restClient);
+                    WriteClientFields(writer, cs);
 
-                    //WriteClientCtor(writer, restClient, cs);
+                    WriteClientCtor(writer, cs);
 
                     foreach (var method in methods)
                     {
-                        //WriteRequestCreation(writer, method);
-                        WriteOperation(writer, method, className);
-                        //WriteOperation(writer, method, false);
+                        WriteOperation(writer, method, cs.Name);
                     }
                 }
             }
         }
 
-        private const string ClientDiagnosticsVariable = "clientDiagnostics";
-        private const string ClientDiagnosticsField = "_" + ClientDiagnosticsVariable;
-        private const string PipelineVariable = "pipeline";
-        private const string PipelineField = "_" + PipelineVariable;
-
-        private void WriteClientFields(CodeWriter writer, RestClient restClient)
+        private void WriteClientFields(CodeWriter writer, CSharpType cs)
         {
-            foreach (Parameter clientParameter in restClient.Parameters)
+            var loggerParam = new Parameter("logger", "Class logger", new CSharpType(typeof(ILogger<>), cs), null, true);
+            var parameters = new List<Parameter> { loggerParam };
+            foreach (Parameter clientParameter in parameters)
             {
-                writer.Line($"private {clientParameter.Type} {clientParameter.Name};");
+                writer.Line($"private {loggerParam.Type} _{loggerParam.Name};");
             }
 
-            writer.Line($"private {typeof(ClientDiagnostics)} {ClientDiagnosticsField};");
-            writer.Line($"private {typeof(HttpPipeline)} {PipelineField};");
             writer.Line();
         }
 
-        private void WriteClientCtor(CodeWriter writer, RestClient restClient, CSharpType cs)
+        private void WriteClientCtor(CodeWriter writer, CSharpType cs)
         {
             writer.WriteXmlDocumentationSummary($"Initializes a new instance of {cs.Name}");
-            writer.WriteXmlDocumentationParameter(ClientDiagnosticsVariable, "The handler for diagnostic messaging in the client.");
-            writer.WriteXmlDocumentationParameter(PipelineVariable, "The HTTP pipeline for sending and receiving REST requests and responses.");
-            foreach (Parameter parameter in restClient.Parameters)
+
+            var loggerParam = new Parameter("logger", "Class logger", new CSharpType(typeof(ILogger<>), cs), null, true);
+            var parameters = new List<Parameter> { loggerParam };
+
+            foreach (Parameter parameter in parameters)
             {
                 writer.WriteXmlDocumentationParameter(parameter.Name, parameter.Description);
             }
 
-            writer.WriteXmlDocumentationRequiredParametersException(restClient.Parameters);
+            writer.WriteXmlDocumentationRequiredParametersException(parameters);
 
-            writer.Append($"public {cs.Name:D}({typeof(ClientDiagnostics)} {ClientDiagnosticsVariable}, {typeof(HttpPipeline)} {PipelineVariable},");
-            foreach (Parameter clientParameter in restClient.Parameters)
+            writer.Append($"public {cs.Name:D}(");
+
+            foreach (Parameter clientParameter in parameters)
             {
                 writer.WriteParameter(clientParameter);
             }
@@ -90,15 +85,12 @@ namespace AutoRest.CSharp.V3.Generation.Writers
             writer.Line($")");
             using (writer.Scope())
             {
-                writer.WriteParameterNullChecks(restClient.Parameters);
+                writer.WriteParameterNullChecks(parameters);
 
-                foreach (Parameter clientParameter in restClient.Parameters)
+                foreach (Parameter clientParameter in parameters)
                 {
-                    writer.Line($"this.{clientParameter.Name} = {clientParameter.Name};");
+                    writer.Line($"_{clientParameter.Name} = {clientParameter.Name};");
                 }
-
-                writer.Line($"{ClientDiagnosticsField} = {ClientDiagnosticsVariable};");
-                writer.Line($"{PipelineField} = {PipelineVariable};");
             }
             writer.Line();
         }
@@ -126,7 +118,6 @@ namespace AutoRest.CSharp.V3.Generation.Writers
                 var request = new CodeWriterDeclaration("request");
                 var uri = new CodeWriterDeclaration("uri");
 
-                writer.Line($"var {message:D} = {PipelineField}.CreateMessage();");
                 writer.Line($"var {request:D} = {message}.Request;");
                 var method = clientMethod.Request.HttpMethod;
                 writer.Line($"{request}.Method = {typeof(RequestMethod)}.{method.ToRequestMethodName()};");
@@ -304,17 +295,17 @@ namespace AutoRest.CSharp.V3.Generation.Writers
                 }
             }
 
-            var logParameter = new Parameter("log", "function logger", new CSharpType(typeof(ILogger)), null, false);
-            // Insert logger before optional params
-            if (indexOfFirstOptional == -1)
-            {
-                parameters.Add(logParameter);
-            }
-            else
-            {
-                indexOfFirstOptional = parameters.FindIndex(p => p.DefaultValue.HasValue);
-                parameters.Insert(indexOfFirstOptional, logParameter);
-            }
+            //var logParameter = new Parameter("log", "function logger", new CSharpType(typeof(ILogger)), null, false);
+            //// Insert logger before optional params
+            //if (indexOfFirstOptional == -1)
+            //{
+            //    parameters.Add(logParameter);
+            //}
+            //else
+            //{
+            //    indexOfFirstOptional = parameters.FindIndex(p => p.DefaultValue.HasValue);
+            //    parameters.Insert(indexOfFirstOptional, logParameter);
+            //}
 
             writer.WriteXmlDocumentationSummary(operation.Description);
 
@@ -363,14 +354,17 @@ namespace AutoRest.CSharp.V3.Generation.Writers
 
             using (writer.Scope())
             {
-                writer.Line($"{logParameter.Name}.LogInformation(\"HTTP Trigger function processed a request.\");").Line();
+                writer.Line($"_logger.LogInformation(\"HTTP trigger function processed a request.\");").Line();
 
-                writer.Line($"// TODO: Handle this Response Codes");
+                if (operation.Responses.Any())
+                {
+                    writer.Line($"// TODO: Handle Documented Responses.");
+                }
                 foreach (var response in operation.Responses)
                 {
                     foreach (var statusCode in response.StatusCodes)
                     {
-                        writer.Line($"// return new {typeof(StatusCodeResult)}({statusCode})");
+                        writer.Line($"// Spec Defines: HTTP {statusCode}");
                     }
                 }
 
@@ -646,14 +640,14 @@ namespace AutoRest.CSharp.V3.Generation.Writers
                 }
 
                 writer.Line($"default:");
-                if (async)
-                {
-                    writer.Line($"throw await {ClientDiagnosticsField}.CreateRequestFailedExceptionAsync({responseVariable}).ConfigureAwait(false);");
-                }
-                else
-                {
-                    writer.Line($"throw {ClientDiagnosticsField}.CreateRequestFailedException({responseVariable});");
-                }
+                //if (async)
+                //{
+                //    writer.Line($"throw await {ClientDiagnosticsField}.CreateRequestFailedExceptionAsync({responseVariable}).ConfigureAwait(false);");
+                //}
+                //else
+                //{
+                //    writer.Line($"throw {ClientDiagnosticsField}.CreateRequestFailedException({responseVariable});");
+                //}
             }
         }
 
