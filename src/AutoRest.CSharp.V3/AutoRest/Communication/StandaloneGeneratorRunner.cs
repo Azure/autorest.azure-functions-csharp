@@ -29,7 +29,7 @@ namespace AutoRest.CSharp.V3.AutoRest.Communication
                 {
                     continue;
                 }
-                var filename = Path.Combine(basePath, file.Name);
+                var filename = Path.Combine(configuration.OutputFolder, file.Name);
                 Console.WriteLine($"Writing {filename}");
                 Directory.CreateDirectory(Path.GetDirectoryName(filename));
                 await File.WriteAllTextAsync(filename, file.Text);

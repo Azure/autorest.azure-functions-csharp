@@ -1,9 +1,7 @@
 {
-    "OutputFolder": ".",
+    "OutputFolder": "HackThePetstore",
     "Namespace": "HackThePetstore",
     "LibraryName": "HackThePetstore",
-    "SharedSourceFolder": "..\\..\\..\\src\\assets",
-    "AzureArm": false,
     "PublicClients": true,
     "GenerateMetadata": true
 }
