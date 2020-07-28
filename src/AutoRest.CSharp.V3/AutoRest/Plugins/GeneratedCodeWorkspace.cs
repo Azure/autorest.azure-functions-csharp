@@ -16,12 +16,6 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
 {
     internal class GeneratedCodeWorkspace
     {
-        public static string SharedFolder = "shared";
-        public static string GeneratedFolder = "Generated";
-
-        private static readonly string[] SharedFolders = { SharedFolder };
-        private static readonly string[] GeneratedFolders = { GeneratedFolder };
-
         private Project _project;
 
         private GeneratedCodeWorkspace(Project generatedCodeProject)
@@ -31,7 +25,7 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
 
         public void AddGeneratedFile(string name, string text)
         {
-            var document = _project.AddDocument(GeneratedFolder + "/" + name, text, GeneratedFolders);
+            var document = _project.AddDocument(name, text);
             var root = document.GetSyntaxRootAsync().Result;
             Debug.Assert(root != null);
 
@@ -80,7 +74,7 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
             return document;
         }
 
-        public static GeneratedCodeWorkspace Create(string projectDirectory, string sharedSourceFolder)
+        public static GeneratedCodeWorkspace Create(string projectDirectory)
         {
             var workspace = new AdhocWorkspace();
             // TODO: This is not the right way to construct the workspace but it works
@@ -102,7 +96,7 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
                 .WithCompilationOptions(new CSharpCompilationOptions(
                 OutputKind.DynamicallyLinkedLibrary, nullableContextOptions: NullableContextOptions.Disable));
 
-            var generatedCodeDirectory = Path.Combine(projectDirectory, "Generated");
+            var generatedCodeDirectory = Path.Combine(projectDirectory);
 
             foreach (string sourceFile in Directory.GetFiles(projectDirectory, "*.cs", SearchOption.AllDirectories))
             {
@@ -112,11 +106,6 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
                     continue;
                 }
                 generatedCodeProject = generatedCodeProject.AddDocument(sourceFile, File.ReadAllText(sourceFile), Array.Empty<string>(), sourceFile).Project;
-            }
-
-            foreach (string sharedSourceFile in Directory.GetFiles(sharedSourceFolder, "*.cs", SearchOption.AllDirectories))
-            {
-                generatedCodeProject = generatedCodeProject.AddDocument(sharedSourceFile, File.ReadAllText(sharedSourceFile), SharedFolders, sharedSourceFile).Project;
             }
 
             return new GeneratedCodeWorkspace(generatedCodeProject);
@@ -129,6 +118,6 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
             return compilation;
         }
 
-        public static bool IsGeneratedDocument(Document document) => document.Folders.Contains(GeneratedFolder);
+        public static bool IsGeneratedDocument(Document document) => true;
     }
 }

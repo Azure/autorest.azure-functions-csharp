@@ -7,27 +7,22 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
 {
     internal class Configuration
     {
-        public Configuration(string outputFolder, string ns, string? name, string sharedSourceFolder, bool saveInputs, bool azureArm, bool publicClients, bool generateMetadata)
+        public Configuration(string outputFolder, string ns, string? name, bool saveInputs, bool publicClients, bool generateMetadata)
         {
             OutputFolder = outputFolder;
             Namespace = ns;
             var namespaceParts = ns.Split('.');
             LibraryName = name ?? namespaceParts.Last();
-            SharedSourceFolder = sharedSourceFolder;
             SaveInputs = saveInputs;
-            AzureArm = azureArm;
-            PublicClients = publicClients || AzureArm;
+            PublicClients = publicClients;
             GenerateMetadata = generateMetadata;
         }
 
         public string OutputFolder { get; }
         public string Namespace { get; }
         public string LibraryName { get; }
-        public string SharedSourceFolder { get; }
         public bool SaveInputs { get; }
-        public bool AzureArm { get; }
         public bool PublicClients { get; }
-
         public bool GenerateMetadata { get; }
     }
 }

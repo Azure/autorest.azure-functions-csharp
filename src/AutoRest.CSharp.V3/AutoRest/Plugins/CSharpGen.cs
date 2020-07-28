@@ -32,7 +32,7 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
         public async Task<GeneratedCodeWorkspace> ExecuteAsync(CodeModel codeModel, Configuration configuration)
         {
             var directory = Directory.CreateDirectory(configuration.OutputFolder);
-            var project = GeneratedCodeWorkspace.Create(configuration.OutputFolder, configuration.SharedSourceFolder);
+            var project = GeneratedCodeWorkspace.Create(configuration.OutputFolder);
             var sourceInputModel = new SourceInputModel(await project.GetCompilationAsync());
 
             var context = new BuildContext(codeModel, configuration, sourceInputModel);
@@ -48,15 +48,12 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
             if (configuration.GenerateMetadata)
             {
                 var x = new ProcessStartInfo("func");
-                x.WorkingDirectory = Path.Combine(configuration.OutputFolder, "Generated");
+                x.WorkingDirectory = configuration.OutputFolder;
                 x.ArgumentList.Add("init");
                 x.ArgumentList.Add("--worker-runtime");
                 x.ArgumentList.Add("dotnet");
                 x.ArgumentList.Add("--force");
                 Process.Start(x).WaitForExit();
-
-                // Rename csproj
-                File.Move(Path.Combine(x.WorkingDirectory, "Generated.csproj"), Path.Combine(x.WorkingDirectory, $"{configuration.LibraryName}.csproj"), true);
             }
 
             foreach (var model in context.Library.Models)
@@ -172,9 +169,7 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
                 new Uri(GetRequiredOption(autoRest, "output-folder")).LocalPath,
                 GetRequiredOption(autoRest, "namespace"),
                 autoRest.GetValue<string?>("library-name").GetAwaiter().GetResult(),
-                new Uri(GetRequiredOption(autoRest, "shared-source-folder")).LocalPath,
                 autoRest.GetValue<bool?>("save-inputs").GetAwaiter().GetResult() ?? false,
-                autoRest.GetValue<bool?>("azure-arm").GetAwaiter().GetResult() ?? false,
                 autoRest.GetValue<bool?>("public-clients").GetAwaiter().GetResult() ?? false,
                 autoRest.GetValue<bool?>("generate-metadata").GetAwaiter().GetResult() ?? true
             );

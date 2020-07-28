@@ -21,7 +21,7 @@ namespace AutoRest.CSharp.V3.Output.Models
 
         protected ClientBase(BuildContext context): base(context)
         {
-            ClientSuffix = context.Configuration.AzureArm ? OperationsSuffixValue : ClientSuffixValue;
+            ClientSuffix = ClientSuffixValue;
             _typeFactory = context.TypeFactory;
             _context = context;
         }
