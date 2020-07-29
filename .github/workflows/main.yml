@@ -49,6 +49,7 @@ jobs:
         outfile=$(npm pack -q)
         echo "Generated ${outfile}"
         outfilewithoutextension=${outfile%.*}
+        echo "::set-output name=versionTag::${devVersion}"
         echo "::set-output name=fileName::${outfile}"
         echo "::set-output name=releaseName::${outfilewithoutextension}"
       
@@ -59,7 +60,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.create_tgz.outputs.releaseName }}
+        tag_name: ${{ steps.create_tgz.outputs.versionTag }}
         release_name: ${{ steps.create_tgz.outputs.releaseName }}
         body: prerelease-build
         draft: false
