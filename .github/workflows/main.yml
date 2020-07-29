@@ -40,7 +40,6 @@ jobs:
     
     - name: Create tgz
       id: create_tgz
-      if: github.event_name != 'pull_request'
       run: |
         cd artifacts/bin/AutoRest.CSharp.V3/Debug/netcoreapp3.0/
         currentVersion=$(node -p -e "require('./package.json').version")
@@ -52,11 +51,11 @@ jobs:
         outfilewithoutextension=${outfile%.*}
         echo "::set-output name=fileName::${outfile}"
         echo "::set-output name=releaseName::${outfilewithoutextension}"
-      # npx publish-release --token ${{ secrets.GITHUB_TOKEN }} --repo autorest.azure-functions-csharp --owner chkittel --name ${outfilewithoutextension} --tag ${devVersion} --notes=prerelease-build --prerelease --editRelease false --assets ${outfile} --target_commitish ${{ github.sha }}
       
-    - name: Create a Release
+    - name: Create GitHub release (on merge only)
       id: create_release
       uses: actions/create-release@v1
+      if: ${{ github.event_name == 'push' }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -66,8 +65,9 @@ jobs:
         draft: false
         prerelease: true
       
-    - name: Upload a Release Asset
+    - name: Upload tgz to release (on merge only)
       uses: actions/upload-release-asset@v1.0.2
+      if: ${{ github.event_name == 'push' }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
