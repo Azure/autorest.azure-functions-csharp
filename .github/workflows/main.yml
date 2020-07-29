@@ -45,5 +45,9 @@ jobs:
         devVersion="${currentVersion}-dev.$GITHUB_RUN_ID"
         echo "Setting version to ${devVersion}"
         npm version --no-git-tag-version ${devVersion}
-        npm pack
+        outfile=$(npm pack -q)
+        echo "Generated ${outfile}"
+        outfilewithoutextension=${fullfile%.*}
+        npm publish-release --repo autorest.azure-functions-csharp --owner chkittel --name ${outfilewithoutextension} --tag ${devVersion} --notes=prerelease-build --prerelease --editRelease false --assets ${outfile} --target_commitish ${{ github.sha }}
+        
 
