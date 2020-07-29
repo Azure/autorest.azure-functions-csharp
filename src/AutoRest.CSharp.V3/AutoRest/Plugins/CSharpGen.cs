@@ -25,7 +25,7 @@ using Diagnostic = Microsoft.CodeAnalysis.Diagnostic;
 
 namespace AutoRest.CSharp.V3.AutoRest.Plugins
 {
-    [PluginName("csharpgen")]
+    [PluginName("azure-functions-csharp")]
     internal class CSharpGen : IPlugin
     {
 
