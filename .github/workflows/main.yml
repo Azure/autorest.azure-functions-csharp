@@ -52,7 +52,6 @@ jobs:
         outfilewithoutextension=${fullfile%.*}
         echo "::set-output name=releaseName::${outfilewithoutextension}"
         echo "::set-output name=fileName::${outfile}"
-        echo "${{ steps.create_tgz.outputs.releaseName }}"
       # npx publish-release --token ${{ secrets.GITHUB_TOKEN }} --repo autorest.azure-functions-csharp --owner chkittel --name ${outfilewithoutextension} --tag ${devVersion} --notes=prerelease-build --prerelease --editRelease false --assets ${outfile} --target_commitish ${{ github.sha }}
       
     - name: Create a Release
@@ -61,9 +60,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         RNAME: ${{ steps.create_tgz.outputs.releaseName }}
+        FNAME: ${{ steps.create_tgz.outputs.fileName }}
       with:
-        tag_name: ${{ steps.create_tgz.outputs.releaseName }}
-        release_name: ${{ steps.create_tgz.outputs.releaseName }}
+        tag_name: hardcoded
+        release_name: hardcoded
         body: prerelease-build
         draft: false
         prerelease: true
