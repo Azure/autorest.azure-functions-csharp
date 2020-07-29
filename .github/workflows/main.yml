@@ -40,7 +40,7 @@ jobs:
     
     - name: Create tgz
       id: create_tgz
-      # if: github.event_name != 'pull_request'
+      if: github.event_name != 'pull_request'
       run: |
         cd artifacts/bin/AutoRest.CSharp.V3/Debug/netcoreapp3.0/
         currentVersion=$(node -p -e "require('./package.json').version")
@@ -49,9 +49,9 @@ jobs:
         npm version --no-git-tag-version ${devVersion}
         outfile=$(npm pack -q)
         echo "Generated ${outfile}"
-        outfilewithoutextension=${fullfile%.*}
-        echo "::set-output name=releaseName::${outfilewithoutextension}"
+        outfilewithoutextension=${outfile%.*}
         echo "::set-output name=fileName::${outfile}"
+        echo "::set-output name=releaseName::${outfilewithoutextension}"
       # npx publish-release --token ${{ secrets.GITHUB_TOKEN }} --repo autorest.azure-functions-csharp --owner chkittel --name ${outfilewithoutextension} --tag ${devVersion} --notes=prerelease-build --prerelease --editRelease false --assets ${outfile} --target_commitish ${{ github.sha }}
       
     - name: Create a Release
@@ -59,11 +59,9 @@ jobs:
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        RNAME: ${{ steps.create_tgz.outputs.releaseName }}
-        FNAME: ${{ steps.create_tgz.outputs.fileName }}
       with:
-        tag_name: hardcoded
-        release_name: hardcoded
+        tag_name: ${{ steps.create_tgz.outputs.releaseName }}
+        release_name: ${{ steps.create_tgz.outputs.releaseName }}
         body: prerelease-build
         draft: false
         prerelease: true
