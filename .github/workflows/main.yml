@@ -50,7 +50,9 @@ jobs:
         outfile=$(npm pack -q)
         echo "Generated ${outfile}"
         outfilewithoutextension=${fullfile%.*}
-        echo "::set-output name=releaseName::$(echo ${outfilewithoutextension})"
+        echo "::set-output name=releaseName::${outfilewithoutextension}"
+        echo "::set-output name=fileName::${outfile}"
+        echo "${{ steps.createtgz.outputs.releaseName }}"
       # npx publish-release --token ${{ secrets.GITHUB_TOKEN }} --repo autorest.azure-functions-csharp --owner chkittel --name ${outfilewithoutextension} --tag ${devVersion} --notes=prerelease-build --prerelease --editRelease false --assets ${outfile} --target_commitish ${{ github.sha }}
       
     - name: Create a Release
@@ -58,6 +60,7 @@ jobs:
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        RNAME: ${{ steps.createtgz.outputs.releaseName }}
       with:
         tag_name: ${{ steps.createtgz.outputs.releaseName }}
         release_name: ${{ steps.createtgz.outputs.releaseName }}
@@ -71,6 +74,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: artifacts/bin/AutoRest.CSharp.V3/Debug/netcoreapp3.0/${{ steps.vars.outputs.releaseName }}.tgz
-        asset_name: ${{ steps.vars.outputs.releaseName }}.tgz
+        asset_path: artifacts/bin/AutoRest.CSharp.V3/Debug/netcoreapp3.0/${{ steps.createtgz.outputs.fileName }}
+        asset_name: ${{ steps.createtgz.outputs.fileName }}
         asset_content_type: application/gzip
