@@ -33,7 +33,13 @@ jobs:
         node-version: 13.x
         check-latest: true
         
-    # Runs a set of commands using the runners shell
-    - name: Run a multi-line script
+    - name: NPM Install
       run: npm ci
-      # working-directory: ${{ github.workspace }}/autorest.azure-functions-csharp
+
+    - name: .net build
+      run: dotnet build AutoRest.CSharp.V3.sln
+      env: |
+          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+          DOTNET_CLI_TELEMETRY_OPTOUT: 1
+          DOTNET_MULTILEVEL_LOOKUP: 0
+
