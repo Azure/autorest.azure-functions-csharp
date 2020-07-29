@@ -11,10 +11,10 @@ modelerfour:
   flatten-payloads: true
   group-parameters: true
 pipeline:
-  csharpgen:
+  azure-functions-csharp:
     input: modelerfour/identity
-  csharpgen/emitter:
-    input: csharpgen
+  azure-functions-csharp/emitter:
+    input: azure-functions-csharp
     scope: output-scope
 output-scope:
   output-artifact: source-file-csharp

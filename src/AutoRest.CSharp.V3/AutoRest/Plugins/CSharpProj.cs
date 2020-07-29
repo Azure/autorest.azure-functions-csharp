@@ -8,7 +8,7 @@ using AutoRest.CSharp.V3.Input;
 namespace AutoRest.CSharp.V3.AutoRest.Plugins
 {
     // ReSharper disable once StringLiteralTypo
-    [PluginName("csharpproj")]
+    [PluginName("azure-functions-csharpproj")]
     // ReSharper disable once IdentifierTypo
     internal class CSharpProj : IPlugin
     {
