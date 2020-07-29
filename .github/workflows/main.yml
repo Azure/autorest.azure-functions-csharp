@@ -36,4 +36,4 @@ jobs:
     # Runs a set of commands using the runners shell
     - name: Run a multi-line script
       run: npm ci
-      working-directory: ${{ github.workspace }}/autorest.azure-functions-csharp
+      # working-directory: ${{ github.workspace }}/autorest.azure-functions-csharp
