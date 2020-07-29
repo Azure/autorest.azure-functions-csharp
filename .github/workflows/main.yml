@@ -10,36 +10,38 @@ on:
   pull_request:
     branches: [ feature/v3 ]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: Setup .NET Core SDK
+    - name: Set up .NET
       uses: actions/setup-dotnet@v1.5.0
       with:
         dotnet-version: 3.0.100
 
-    - name: Setup Node.js environment
+    - name: Set up Node
       uses: actions/setup-node@v2.1.1
       with:
         node-version: 13.x
         check-latest: true
         
-    - name: NPM Install
+    - name: Perform npm install
       run: npm ci
 
-    - name: .net build
+    - name: Build AutoRest.CSharp.V3
       run: dotnet build AutoRest.CSharp.V3.sln
       env:
           DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
           DOTNET_CLI_TELEMETRY_OPTOUT: 1
           DOTNET_MULTILEVEL_LOOKUP: 0
+    
+    - name: Publish
+      run: |
+        cd artifacts/bin/AutoRest.CSharp.V3/Debug/netcoreapp3.0/
+        $currentVersion = node -p -e "require('./package.json').version
+        $devVersion="${currentVersion}-dev.$GITHUB_RUN_ID"
+        echo "Setting version to ${devVersion}"
 
