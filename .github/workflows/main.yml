@@ -41,8 +41,8 @@ jobs:
     - name: Publish
       run: |
         cd artifacts/bin/AutoRest.CSharp.V3/Debug/netcoreapp3.0/
-        $currentVersion = node -p -e "require('./package.json').version"
-        $devVersion="${currentVersion}-dev.$GITHUB_RUN_ID"
+        currentVersion=$(node -p -e "require('./package.json').version")
+        devVersion="${currentVersion}-dev.$GITHUB_RUN_ID"
         echo "Setting version to ${devVersion}"
-        npm version --no-git-tag-version $devVersion
+        npm version --no-git-tag-version ${devVersion}
 
