@@ -45,4 +45,5 @@ jobs:
         devVersion="${currentVersion}-dev.$GITHUB_RUN_ID"
         echo "Setting version to ${devVersion}"
         npm version --no-git-tag-version ${devVersion}
+        npm pack
 
