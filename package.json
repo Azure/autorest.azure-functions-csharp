@@ -1,5 +1,5 @@
 {
-  "name": "@autorest/csharp-v3",
+  "name": "@autorest/azure-functions-csharp",
   "private": true,
   "description": "package.json intended for in-repo use only, package.json used for publishing is located in src/AutoRest.CSharp.V3/package.json",
   "devDependencies": {
