@@ -39,7 +39,7 @@ jobs:
           DOTNET_MULTILEVEL_LOOKUP: 0
     
     - name: Create tgz
-      id: createtgz
+      id: create_tgz
       # if: github.event_name != 'pull_request'
       run: |
         cd artifacts/bin/AutoRest.CSharp.V3/Debug/netcoreapp3.0/
@@ -52,7 +52,7 @@ jobs:
         outfilewithoutextension=${fullfile%.*}
         echo "::set-output name=releaseName::${outfilewithoutextension}"
         echo "::set-output name=fileName::${outfile}"
-        echo "${{ steps.createtgz.outputs.releaseName }}"
+        echo "${{ steps.create_tgz.outputs.releaseName }}"
       # npx publish-release --token ${{ secrets.GITHUB_TOKEN }} --repo autorest.azure-functions-csharp --owner chkittel --name ${outfilewithoutextension} --tag ${devVersion} --notes=prerelease-build --prerelease --editRelease false --assets ${outfile} --target_commitish ${{ github.sha }}
       
     - name: Create a Release
@@ -60,10 +60,10 @@ jobs:
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        RNAME: ${{ steps.createtgz.outputs.releaseName }}
+        RNAME: ${{ steps.create_tgz.outputs.releaseName }}
       with:
-        tag_name: ${{ steps.createtgz.outputs.releaseName }}
-        release_name: ${{ steps.createtgz.outputs.releaseName }}
+        tag_name: ${{ steps.create_tgz.outputs.releaseName }}
+        release_name: ${{ steps.create_tgz.outputs.releaseName }}
         body: prerelease-build
         draft: false
         prerelease: true
@@ -74,6 +74,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: artifacts/bin/AutoRest.CSharp.V3/Debug/netcoreapp3.0/${{ steps.createtgz.outputs.fileName }}
-        asset_name: ${{ steps.createtgz.outputs.fileName }}
+        asset_path: artifacts/bin/AutoRest.CSharp.V3/Debug/netcoreapp3.0/${{ steps.create_tgz.outputs.fileName }}
+        asset_name: ${{ steps.create_tgz.outputs.fileName }}
         asset_content_type: application/gzip
