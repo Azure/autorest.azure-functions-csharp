@@ -38,11 +38,40 @@ jobs:
           DOTNET_CLI_TELEMETRY_OPTOUT: 1
           DOTNET_MULTILEVEL_LOOKUP: 0
     
-    - name: Publish
+    - name: Create tgz
+      id: create_tgz
+      if: github.event_name != 'pull_request'
       run: |
         cd artifacts/bin/AutoRest.CSharp.V3/Debug/netcoreapp3.0/
         currentVersion=$(node -p -e "require('./package.json').version")
         devVersion="${currentVersion}-dev.$GITHUB_RUN_ID"
         echo "Setting version to ${devVersion}"
         npm version --no-git-tag-version ${devVersion}
-
+        outfile=$(npm pack -q)
+        echo "Generated ${outfile}"
+        outfilewithoutextension=${outfile%.*}
+        echo "::set-output name=fileName::${outfile}"
+        echo "::set-output name=releaseName::${outfilewithoutextension}"
+      # npx publish-release --token ${{ secrets.GITHUB_TOKEN }} --repo autorest.azure-functions-csharp --owner chkittel --name ${outfilewithoutextension} --tag ${devVersion} --notes=prerelease-build --prerelease --editRelease false --assets ${outfile} --target_commitish ${{ github.sha }}
+      
+    - name: Create a Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.create_tgz.outputs.releaseName }}
+        release_name: ${{ steps.create_tgz.outputs.releaseName }}
+        body: prerelease-build
+        draft: false
+        prerelease: true
+      
+    - name: Upload a Release Asset
+      uses: actions/upload-release-asset@v1.0.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: artifacts/bin/AutoRest.CSharp.V3/Debug/netcoreapp3.0/${{ steps.create_tgz.outputs.fileName }}
+        asset_name: ${{ steps.create_tgz.outputs.fileName }}
+        asset_content_type: application/gzip
