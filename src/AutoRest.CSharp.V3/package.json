@@ -1,11 +1,16 @@
 {
-    "version": "0.1.0",
+    "version": "0.1.0-preview",
     "name": "@autorest/azure-functions-csharp",
     "description": "See readme.md for details",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Azure/autorest.azure-functions-csharp"
+    },
     "scripts": {
         "start": "dotnet ./AutoRest.CSharp.V3.dll --server"
     },
-    "devDependencies": {
-    },
+    "author": "Microsoft Corporation",
+    "license": "MIT",
+    "devDependencies": {},
     "dependencies": {}
 }

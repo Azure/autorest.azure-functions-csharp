@@ -1,10 +1,12 @@
-# AutoRest.CSharp.V3
+# Azure Functions C# code generator for AutoRest V3
+
 > see https://aka.ms/autorest
 
 ## Configuration
+
 ```yaml
 use-extension:
-  "@autorest/modelerfour": "4.15.396"
+  "@autorest/modelerfour": "4.15.414"
 modelerfour:
   always-create-content-type-parameter: true
   flatten-models: true
@@ -15,6 +17,11 @@ pipeline:
     input: modelerfour/identity
   azure-functions-csharp/emitter:
     input: azure-functions-csharp
+    scope: output-scope
+  azure-functions-csharpproj:
+    input: modelerfour/identity
+  azure-functions-csharpproj/emitter:
+    input: azure-functions-csharpproj
     scope: output-scope
 output-scope:
   output-artifact: source-file-csharp

@@ -13,20 +13,19 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
     internal class CSharpProj : IPlugin
     {
         private string _csProjContent = @"<Project Sdk=""Microsoft.NET.Sdk"">
-
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Nullable>annotations</Nullable>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include=""Azure.Core"" Version=""1.1.0"" />
-    <PackageReference Include=""System.Text.Json"" Version=""4.6.0"" />
-  </ItemGroup>
-
-</Project>
-
+    <PropertyGroup><TargetFramework>netcoreapp3.1</TargetFramework>
+        <AzureFunctionsVersion>v3</AzureFunctionsVersion>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include=""Microsoft.NET.Sdk.Functions"" Version=""3.0.3""/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Update=""host.json""><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
+        <None Update=""local.settings.json"">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+        </None>
+</ItemGroup></Project>
 ";
         public async Task<bool> Execute(IPluginCommunication autoRest)
         {
