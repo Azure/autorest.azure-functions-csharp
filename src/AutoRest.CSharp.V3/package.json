@@ -1,7 +1,7 @@
 {
     "version": "0.1.0-preview",
     "name": "@autorest/azure-functions-csharp",
-    "description": "See readme.md for details",
+    "description": "The Azure Functions extension for csharp code generators in AutoRest.",
     "repository": {
         "type": "git",
         "url": "https://github.com/Azure/autorest.azure-functions-csharp"
@@ -11,6 +11,10 @@
     },
     "author": "Microsoft Corporation",
     "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/Azure/autorest.azure-functions/issues"
+    },
+    "homepage": "https://github.com/Azure/autorest.azure-functions-csharp/",
     "devDependencies": {},
     "dependencies": {}
 }

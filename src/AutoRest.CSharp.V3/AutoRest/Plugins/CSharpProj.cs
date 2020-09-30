@@ -20,7 +20,12 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
         <PackageReference Include=""Microsoft.NET.Sdk.Functions"" Version=""3.0.3""/>
     </ItemGroup>
     <ItemGroup>
-        <None Update=""host.json""><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>
+        <None Update=""host.json"">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="".autorest_generated.json"">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
         <None Update=""local.settings.json"">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <CopyToPublishDirectory>Never</CopyToPublishDirectory>
