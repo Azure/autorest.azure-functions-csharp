@@ -1,5 +1,5 @@
 {
-    "version": "0.1.0-preview",
+    "version": "0.2.0-preview",
     "name": "@autorest/azure-functions-csharp",
     "description": "The Azure Functions extension for csharp code generators in AutoRest.",
     "repository": {
