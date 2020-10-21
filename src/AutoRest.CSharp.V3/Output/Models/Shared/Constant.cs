@@ -42,7 +42,7 @@ namespace AutoRest.CSharp.V3.Output.Models.Shared
 
             if (value != null && type.IsFrameworkType && value.GetType() != type.FrameworkType)
             {
-                throw new InvalidOperationException("Constant type mismatch");
+                throw new InvalidOperationException($"Constant type mismatch. value: {value} | type.IsFrameworkType {type.IsFrameworkType} | {value.GetType()} != {type.FrameworkType}");
             }
         }
 

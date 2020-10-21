@@ -200,10 +200,9 @@ namespace AutoRest.CSharp.V3.Generation.Writers
                     foreach (var initializer in constructor.Initializers)
                     {
                         writer.Append($"{initializer.Property.Declaration.Name} = ")
-                            .WriteConversion(initializer.Value.Type, initializer.Property.Declaration.Type, w=>w.WriteReferenceOrConstant(initializer.Value));
+                            .WriteConversion(initializer.Value.Type, initializer.Property.Declaration.Type, w => w.WriteReferenceOrConstant(initializer.Value));
 
-                        if (initializer.DefaultValue != null &&
-                            !initializer.Value.Type.IsValueType)
+                        if (initializer.DefaultValue != null && (!initializer.Value.Type.IsValueType || initializer.Value.Type.IsNullable))
                         {
                             writer.Append($"?? ").WriteReferenceOrConstant(initializer.DefaultValue.Value);
                         }
@@ -227,7 +226,7 @@ namespace AutoRest.CSharp.V3.Generation.Writers
             {
                 writer.WriteXmlDocumentationSummary(schema.Description);
 
-                using (writer.Scope($"public enum {schema.Declaration.Name}"))
+                using (writer.Scope($"{schema.Declaration.Accessibility} enum {schema.Declaration.Name}"))
                 {
                     foreach (EnumTypeValue value in schema.Values)
                     {
@@ -275,14 +274,16 @@ namespace AutoRest.CSharp.V3.Generation.Writers
 
                     foreach (var choice in schema.Values)
                     {
-                        writer.Line($"private const {schema.BaseType} {choice.Declaration.Name}Value = {choice.Value.Value:L};");
+                        var fieldName = GetValueFieldName(name, choice.Declaration.Name, schema.Values);
+                        writer.Line($"private const {schema.BaseType} {fieldName} = {choice.Value.Value:L};");
                     }
                     writer.Line();
 
                     foreach (var choice in schema.Values)
                     {
                         writer.WriteXmlDocumentationSummary(choice.Description);
-                        writer.Append($"public static {cs} {choice.Declaration.Name}").AppendRaw("{ get; }").Append($" = new {cs}({choice.Declaration.Name}Value);").Line();
+                        var fieldName = GetValueFieldName(name, choice.Declaration.Name, schema.Values);
+                        writer.Append($"public static {cs} {choice.Declaration.Name}").AppendRaw("{ get; }").Append($" = new {cs}({fieldName});").Line();
                     }
 
                     writer.WriteXmlDocumentationSummary($"Determines if two <see cref=\"{name}\"/> values are the same.");
@@ -336,6 +337,24 @@ namespace AutoRest.CSharp.V3.Generation.Writers
                     }
                 }
             }
+        }
+
+        private string GetValueFieldName(string enumName, string enumValue, IList<EnumTypeValue> enumValues)
+        {
+            if (enumName != $"{enumValue}Value")
+            {
+                return $"{enumValue}Value";
+            }
+
+            int index = 1;
+            foreach (var value in enumValues)
+            {
+                if (value.Declaration.Name == $"{enumValue}Value{index}")
+                {
+                    index++;
+                }
+            }
+            return $"{enumValue}Value{index}";
         }
 
         private void WriteEditorBrowsableFalse(CodeWriter writer)

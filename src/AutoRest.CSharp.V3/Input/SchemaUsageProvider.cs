@@ -12,6 +12,15 @@ namespace AutoRest.CSharp.V3.Input
 
         public SchemaUsageProvider(CodeModel codeModel)
         {
+            foreach (var objectSchema in codeModel.Schemas.Objects)
+            {
+                var usage = objectSchema?.Extensions?.Usage;
+
+                if (usage != null)
+                {
+                    Apply(objectSchema, (SchemaTypeUsage) Enum.Parse(typeof(SchemaTypeUsage), usage, true));
+                }
+            }
             foreach (var operationGroup in codeModel.OperationGroups)
             {
                 foreach (var operation in operationGroup.Operations)
@@ -26,21 +35,31 @@ namespace AutoRest.CSharp.V3.Input
                         Apply(operationResponse.ResponseSchema, SchemaTypeUsage.Error | SchemaTypeUsage.Output);
                     }
 
+                    foreach (var parameter in operation.Parameters)
+                    {
+                        ApplyParameterSchema(parameter);
+                    }
+
                     foreach (var serviceRequest in operation.Requests)
                     {
                         foreach (var parameter in serviceRequest.Parameters)
                         {
-                            if (parameter.Flattened == true)
-                            {
-                                Apply(parameter.Schema, SchemaTypeUsage.FattenedParameters | SchemaTypeUsage.Input, recurse: false);
-                            }
-                            else
-                            {
-                                Apply(parameter.Schema, SchemaTypeUsage.Model | SchemaTypeUsage.Input);
-                            }
+                            ApplyParameterSchema(parameter);
                         }
                     }
                 }
+            }
+        }
+
+        private void ApplyParameterSchema(RequestParameter parameter)
+        {
+            if (parameter.Flattened == true)
+            {
+                Apply(parameter.Schema, SchemaTypeUsage.FattenedParameters | SchemaTypeUsage.Input, recurse: false);
+            }
+            else
+            {
+                Apply(parameter.Schema, SchemaTypeUsage.Model | SchemaTypeUsage.Input);
             }
         }
 
@@ -100,7 +119,7 @@ namespace AutoRest.CSharp.V3.Input
             }
         }
 
-        public SchemaTypeUsage GetUsage(ObjectSchema schema)
+        public SchemaTypeUsage GetUsage(Schema schema)
         {
             _usages.TryGetValue(schema, out var usage);
             return usage;

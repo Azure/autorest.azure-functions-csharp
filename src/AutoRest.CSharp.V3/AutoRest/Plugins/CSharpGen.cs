@@ -52,7 +52,7 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
                 var LocalSettingsJSONTemplate = File.ReadAllText(@"StaticResources/LocalSettingsJSONTemplate.json");
                 var VSCodeExtensions = File.ReadAllText(@"StaticResources/VSCodeExtensions.json");
                 var HostJSONTemplate = File.ReadAllText(@"StaticResources/HostJSONTemplate.json");
-                var AutorestGeneratedJSONTemplate = File.ReadAllText(@"StaticResources/AutorestGeneratedJSONTemplate.json");
+                var AutorestGeneratedJSONTemplate = File.ReadAllText(@"StaticResources/AutorestGenerated.json");
 
                 project.AddGeneratedFile(".gitignore", GitIgnoreTemplateFile);
                 project.AddGeneratedFile(".vscode/extensions.json", VSCodeExtensions);
