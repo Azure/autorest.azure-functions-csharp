@@ -21,7 +21,7 @@ namespace AutoRest.CSharp.V3.AutoRest.Communication
             var configuration = LoadConfiguration(basePath, File.ReadAllText(Path.Combine(basePath, "Configuration.json")));
             var codeModel = CodeModelSerialization.DeserializeCodeModel(File.ReadAllText(Path.Combine(basePath, "CodeModel.yaml")));
 
-            var workspace = await new CSharpGen().ExecuteAsync(codeModel, configuration);
+            var workspace = await new CSharpGen().ExecuteAsync(codeModel, configuration, null);
 
             await foreach (var file in workspace.GetGeneratedFilesAsync())
             {

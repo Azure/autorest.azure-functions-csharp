@@ -21,21 +21,3 @@ pipeline:
 output-scope:
   output-artifact: source-file-csharp
 ```
-
-``` yaml $(generate-metadata) == true
-use-extension:
-  "@autorest/modelerfour": "4.15.414"
-modelerfour:
-  always-create-content-type-parameter: true
-  flatten-models: true
-  flatten-payloads: true
-  group-parameters: true
-pipeline:
-  azure-functions-csharpproj:
-    input: modelerfour/identity
-  azure-functions-csharpproj/emitter:
-    input: azure-functions-csharpproj
-    scope: output-scope
-output-scope:
-  output-artifact: source-file-csharp
-```

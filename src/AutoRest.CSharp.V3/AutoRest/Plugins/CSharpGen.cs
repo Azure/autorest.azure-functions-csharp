@@ -30,7 +30,7 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
     internal class CSharpGen : IPlugin
     {
 
-        public async Task<GeneratedCodeWorkspace> ExecuteAsync(CodeModel codeModel, Configuration configuration)
+        public async Task<GeneratedCodeWorkspace> ExecuteAsync(CodeModel codeModel, Configuration configuration, IPluginCommunication? autoRest)
         {
             var directory = Directory.CreateDirectory(configuration.OutputFolder);
             var project = GeneratedCodeWorkspace.Create(configuration.OutputFolder);
@@ -44,6 +44,7 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
             var restServerWriter = new RestServerWriter();
             var serializeWriter = new SerializationWriter();
             var headerModelModelWriter = new ResponseHeaderGroupWriter();
+            var cSharpProj = new CSharpProj();
 
             // Generate the landing zone for the files.
             if (configuration.GenerateMetadata)
@@ -52,16 +53,19 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
                 var LocalSettingsJSONTemplate = File.ReadAllText(@"StaticResources/LocalSettingsJSONTemplate.json");
                 var VSCodeExtensions = File.ReadAllText(@"StaticResources/VSCodeExtensions.json");
                 var HostJSONTemplate = File.ReadAllText(@"StaticResources/HostJSONTemplate.json");
-                var AutorestGeneratedJSONTemplate = File.ReadAllText(@"StaticResources/AutorestGenerated.json");
 
                 project.AddGeneratedFile(".gitignore", GitIgnoreTemplateFile);
                 project.AddGeneratedFile(".vscode/extensions.json", VSCodeExtensions);
                 project.AddGeneratedFile("host.json", HostJSONTemplate);
                 project.AddGeneratedFile("local.settings.json", LocalSettingsJSONTemplate);
-                project.AddGeneratedFile(".autorest_generated.json", AutorestGeneratedJSONTemplate);
+                if (autoRest != null)
+                    { _ = await cSharpProj.Execute(autoRest); }
             }
 
-            foreach (var model in context.Library.Models)
+            var AutorestGeneratedJSONTemplate = File.ReadAllText(@"StaticResources/AutorestGenerated.json");
+            project.AddGeneratedFile(".autorest_generated.json", AutorestGeneratedJSONTemplate);
+
+            foreach (TypeProvider? model in context.Library.Models)
             {
                 var codeWriter = new CodeWriter();
                 modelWriter.WriteModel(codeWriter, model);
@@ -70,13 +74,13 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
                 project.AddGeneratedFile($"Models/{name}.cs", codeWriter.ToString());
             }
 
-            foreach (var client in context.Library.RestClients)
+            foreach (Output.Models.RestClient? client in context.Library.RestClients)
             {
                 // HACK: since I'm mooching off of rest clients, need to map based on path segments
                 // to reasonable file chunks
-                var apiGroups = client.Methods.GroupBy(m =>
+                IEnumerable<IGrouping<string, Output.Models.Requests.RestClientMethod>>? apiGroups = client.Methods.GroupBy(m =>
                 {
-                    var pathSegment = m.Request.PathSegments.First(s => {
+                    Output.Models.Requests.PathSegment? pathSegment = m.Request.PathSegments.First(s => {
                         var segementValue = s.Value.IsConstant ? s.Value.Constant.Value : null;
                         if (segementValue != null)
                         {
@@ -98,7 +102,7 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
                     return string.Empty;
                 });
 
-                foreach (var apiGroup in apiGroups)
+                foreach (IGrouping<string, Output.Models.Requests.RestClientMethod>? apiGroup in apiGroups)
                 {
                     var codeWriter = new CodeWriter();
                     var cs = new CSharpType(new SelfTypeProvider(context), client.Type.Namespace, $"{apiGroup.Key.ToCleanName()}Api");
@@ -137,7 +141,7 @@ namespace AutoRest.CSharp.V3.AutoRest.Plugins
                 await autoRest.WriteFile("CodeModel.yaml", codeModelYaml, "source-file-csharp");
             }
 
-            var project = await ExecuteAsync(codeModel, configuration);
+            var project = await ExecuteAsync(codeModel, configuration, autoRest);
             await foreach (var file in project.GetGeneratedFilesAsync())
             {
                 await autoRest.WriteFile(file.Name, file.Text, "source-file-csharp");
